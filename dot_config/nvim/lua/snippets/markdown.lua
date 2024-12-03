@@ -51,7 +51,7 @@ return {
       "- [ ] ",
     }),
   }),
-  s("dated_note", {
+  s("daily_note", {
     f(function()
       return "# " .. calculate_date(0) -- Today's date
     end),
@@ -63,6 +63,7 @@ return {
     f(function()
       return calculate_date(1) -- The weekday after
     end),
-    t({ "]]", "", "", "## TODO", "", "- [ ]", "", "", "## Misc Notes", "", "-", "", "", "## Meeting Notes" }),
+    t({ "]]", "", "", "## TODO", "", "- [ ]", "", "", "## Misc Notes", "", "-", "", "", "## Meeting Notes", "", "" }),
+    i(0),
   }),
 }
