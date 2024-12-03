@@ -1,7 +1,12 @@
 local ls = require("luasnip")
+local f = ls.function_node
 local s = ls.snippet
 local t = ls.text_node
 local i = ls.insert_node
+
+local function calculate_date(offset)
+  return os.date("%Y-%m-%d", os.time() + offset * 86400)
+end
 
 return {
   s("meet", {
@@ -45,5 +50,19 @@ return {
       "",
       "- [ ] ",
     }),
+  }),
+  s("dated_note", {
+    f(function()
+      return "# " .. calculate_date(0) -- Today's date
+    end),
+    t({ "", "", "[[" }),
+    f(function()
+      return calculate_date(-1) -- The weekday before
+    end),
+    t("]] - [["),
+    f(function()
+      return calculate_date(1) -- The weekday after
+    end),
+    t({ "]]", "", "", "## TODO", "", "- [ ]", "", "", "## Misc Notes", "", "-", "", "", "## Meeting Notes" }),
   }),
 }
