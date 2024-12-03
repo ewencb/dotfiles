@@ -23,3 +23,7 @@ if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ] && [ -z "${TMUX}" ]; then
 fi
 
 export EDITOR="nvim"
+export ZK_NOTEBOOK_DIR="~/Documents/Notes/"
+
+# Created by `pipx` on 2024-12-02 22:57:06
+export PATH="$PATH:/home/cewen/.local/bin"
