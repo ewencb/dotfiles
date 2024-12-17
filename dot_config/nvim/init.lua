@@ -23,6 +23,7 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.tabstop = 4
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
