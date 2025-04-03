@@ -1,0 +1,11 @@
+#!/bin/bash
+
+notes_dir="/home/cewen/notes"
+mkdir -p "$notes_dir"
+
+slug=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+filename="${slug}.md"
+filepath="${notes_dir}/${filename}"
+
+nvim "$filepath" +"lua vim.api.nvim_buf_set_lines(0, 0, 0, false, {'# $1', ''})"
+

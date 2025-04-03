@@ -26,4 +26,9 @@ export EDITOR="nvim"
 
 # Created by `pipx` on 2024-12-02 22:57:06
 export PATH="$PATH:/home/cewen/.local/bin"
+
+# dotfiles management
 alias dotfiles='/usr/bin/git --git-dir=/home/cewen/.dotfiles/ --work-tree=/home/cewen'
+
+# path
+export PATH="$PATH:/home/cewen/bin"
