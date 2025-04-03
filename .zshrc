@@ -33,15 +33,27 @@ alias dotfiles='/usr/bin/git --git-dir=/home/cewen/.dotfiles/ --work-tree=/home/
 dotsync() {
   emoji="🛠️"
   msg=${1:-"update dotfiles"}
+
+  # Add newly un-ignored, untracked files
+  while IFS= read -r f; do
+    dotfiles add "$f"
+  done < <(dotfiles ls-files --others --exclude-standard)
+
+  # Add all other changes (modified/deleted files allowed by .gitignore)
   dotfiles add .
+
+  # Pull latest changes before committing
   dotfiles pull --rebase
-  if ! dotfiles diff --cached --quiet || ! dotfiles diff --quiet; then
+
+  # Only commit/push if there's something staged
+  if ! dotfiles diff --cached --quiet; then
     dotfiles commit -m "$emoji $msg"
     dotfiles push
   else
     echo "✨ No changes to sync"
   fi
 }
+
 
 
 # path
