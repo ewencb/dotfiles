@@ -1,2 +1,25 @@
+# Ignore everything
 *
+
+# Except files in ~
 !.gitignore
+!.gnome-settings-backup.conf
+!.tmux.conf
+!.zshrc
+!.DOTFILES.md
+
+# Config folders and contents
+!.config/hypr/
+!.config/hypr/**
+
+!.config/kitty
+!.config/kitty/**
+
+!.config/nvim/
+!.config/nvim/**
+
+!.config/waybar/
+!.config/waybar/**
+
+!.config/wofi/
+!.config/wofi/**

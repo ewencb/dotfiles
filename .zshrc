@@ -33,9 +33,9 @@ alias dotfiles='/usr/bin/git --git-dir=/home/cewen/.dotfiles/ --work-tree=/home/
 dotsync() {
   emoji="🛠️"
   msg=${1:-"update dotfiles"}
+  dotfiles add .
   dotfiles pull --rebase
   if ! dotfiles diff --cached --quiet || ! dotfiles diff --quiet; then
-    dotfiles add -u
     dotfiles commit -m "$emoji $msg"
     dotfiles push
   else
