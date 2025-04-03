@@ -30,5 +30,19 @@ export PATH="$PATH:/home/cewen/.local/bin"
 # dotfiles management
 alias dotfiles='/usr/bin/git --git-dir=/home/cewen/.dotfiles/ --work-tree=/home/cewen'
 
+dotsync() {
+  emoji="🛠️"
+  msg=${1:-"update dotfiles"}
+  dotfiles pull --rebase
+  if ! dotfiles diff --cached --quiet || ! dotfiles diff --quiet; then
+    dotfiles add -u
+    dotfiles commit -m "$emoji $msg"
+    dotfiles push
+  else
+    echo "✨ No changes to sync"
+  fi
+}
+
+
 # path
 export PATH="$PATH:/home/cewen/bin"
