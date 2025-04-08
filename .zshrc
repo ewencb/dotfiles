@@ -28,7 +28,7 @@ export EDITOR="nvim"
 export PATH="$PATH:/home/cewen/.local/bin"
 
 # dotfiles management
-alias dotfiles='/usr/bin/git --git-dir=/home/cewen/.dotfiles/ --work-tree=/home/cewen'
+alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 dotsync() {
   emoji="🛠️"
@@ -57,4 +57,4 @@ dotsync() {
 
 
 # path
-export PATH="$PATH:/home/cewen/bin"
+export PATH="$PATH:$HOME/bin"
