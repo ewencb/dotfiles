@@ -23,3 +23,5 @@
 
 !.config/wofi/
 !.config/wofi/**
+
+.config/nvim/lazy-lock.json
