@@ -12,6 +12,9 @@
 !.config/hypr/
 !.config/hypr/**
 
+!.config/sway/
+!.config/sway/**
+
 !.config/kitty
 !.config/kitty/**
 
