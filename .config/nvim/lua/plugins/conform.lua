@@ -34,6 +34,7 @@ return { -- Autoformat
       lua = { "stylua" },
       python = { "isort", "black" },
       rust = { "rustfmt" },
+      markdown = { "prettier" },
     },
   },
 }

@@ -29,6 +29,9 @@ vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+vim.opt.textwidth = 80
+vim.opt.formatoptions:append("t")
+vim.opt.formatoptions:append("j")
 
 -- bootstrap lazy.nvim and plugins
 require("config.lazy")
