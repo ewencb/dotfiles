@@ -1,0 +1,5 @@
+# Files at the top of each package that stow should not link into $HOME
+README.*
+\.git
+\.gitignore
+\.DS_Store
