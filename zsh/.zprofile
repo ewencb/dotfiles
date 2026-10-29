@@ -15,6 +15,10 @@ export VISUAL=nvim
 export LANG=en_US.UTF-8
 export HOMEBREW_NO_ANALYTICS=1
 
+# System CA bundle, for prebuilt apps (BambuStudio) that can't find it (Arch only)
+[[ -f /etc/ssl/certs/ca-certificates.crt ]] &&
+  export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
 # SSH keys come from the Bitwarden agent, whose socket differs per OS
 if [[ $OSTYPE == darwin* ]]; then
   export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
@@ -24,3 +28,8 @@ fi
 
 # Secrets and machine-specific settings, kept out of the repo
 [[ -r ~/.zprofile.local ]] && source ~/.zprofile.local
+
+# Start Sway when logging in on tty1 (Arch only); keep last, exec never returns
+if [[ -z $WAYLAND_DISPLAY && $TTY == /dev/tty1 ]]; then
+  exec sway
+fi
