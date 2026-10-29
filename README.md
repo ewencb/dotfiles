@@ -8,6 +8,7 @@ place.
 | Package | Contents | Machines |
 | --- | --- | --- |
 | `nvim` | Neovim config, see [its README](nvim/.config/nvim/README.md) | all |
+| `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
 
 ## Setup
 
@@ -15,7 +16,7 @@ place.
 # Arch: sudo pacman -S git stow    macOS: brew install git stow
 git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
-stow nvim
+stow nvim alacritty
 ```
 
 `stow -D <package>` removes a package's links. Stow refuses to overwrite
