@@ -9,14 +9,16 @@ place.
 | --- | --- | --- |
 | `nvim` | Neovim config, see [its README](nvim/.config/nvim/README.md) | all |
 | `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
+| `zsh` | `.zshrc`: vim mode, two-line prompt, fzf and plugins | all |
+| `git` | `.gitconfig`: name and email | all |
 
 ## Setup
 
 ```sh
 # Arch: sudo pacman -S git stow    macOS: brew install git stow
-git clone <repo-url> ~/dotfiles
+git clone git@github.com:ewencb/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-stow nvim alacritty
+stow nvim alacritty zsh git
 ```
 
 `stow -D <package>` removes a package's links. Stow refuses to overwrite
@@ -28,9 +30,9 @@ Move it into a package folder with the same path it has under `$HOME`,
 then stow it:
 
 ```sh
-mkdir -p ~/dotfiles/git
-mv ~/.gitconfig ~/dotfiles/git/
-cd ~/dotfiles && stow git
+mkdir -p ~/dotfiles/tmux
+mv ~/.tmux.conf ~/dotfiles/tmux/
+cd ~/dotfiles && stow tmux
 ```
 
 Put config that only applies to one OS in its own package (e.g. `macos`,
