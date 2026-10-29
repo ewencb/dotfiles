@@ -10,9 +10,13 @@ key = "Return"
 mods = "Shift"
 chars = "\u001B\r"
 
+[cursor]
+blink_interval = 267   # CGA blink rate: 16 frames on, 16 off at 60 Hz
+blink_timeout  = 0     # never stop blinking when idle
+
 [cursor.style]
 shape    = "Underline"
-blinking = "On"
+blinking = "Always"    # ignore apps asking for a steady cursor
 
 # IBM CGA text mode, 16 colours
 

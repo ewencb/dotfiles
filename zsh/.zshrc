@@ -24,17 +24,17 @@ zstyle ':completion:*' group-name ''
 bindkey -v
 export KEYTIMEOUT=1
 
-# Mode shown two ways: cursor shape (block/beam) and prompt arrow (❮/❯)
+# Mode shown two ways: cursor shape (blinking block/underline, DOS-style) and prompt arrow (❮/❯)
 _mode_char='❯'
 zle-keymap-select() {
   if [[ $KEYMAP == vicmd ]]; then
-    echo -ne '\e[2 q'; _mode_char='❮'
+    echo -ne '\e[1 q'; _mode_char='❮'
   else
-    echo -ne '\e[6 q'; _mode_char='❯'
+    echo -ne '\e[3 q'; _mode_char='❯'
   fi
   zle reset-prompt
 }
-zle-line-init() { echo -ne '\e[6 q'; _mode_char='❯' }
+zle-line-init() { echo -ne '\e[3 q'; _mode_char='❯' }
 zle -N zle-keymap-select
 zle -N zle-line-init
 
