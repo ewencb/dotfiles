@@ -1,36 +1,30 @@
 # dotfiles
 
-Configs for macOS and Arch Linux, managed with
-[GNU Stow](https://www.gnu.org/software/stow/). Each top-level folder is a
-package whose contents mirror `$HOME`; `stow <package>` symlinks it into
-place.
+macOS and Arch configs, managed with [stow](https://www.gnu.org/software/stow/).
 
-| Package | Contents | Machines |
+| Package | What | Where |
 | --- | --- | --- |
-| `nvim` | Neovim config, see [its README](nvim/.config/nvim/README.md) | all |
-| `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
-| `zsh` | `.zshrc` (vim mode, prompt, plugins) and `.zprofile` (PATH, env) | all |
-| `git` | `.gitconfig` (name, email) and global hooks that scan commits for secrets with [gitleaks](https://github.com/gitleaks/gitleaks) | all |
-| `arch` | `~/.config/alacritty-font.toml`: `Terminus` | Arch |
-| `macos` | `~/.config/alacritty-font.toml`: `Terminus (TTF)` | macOS |
+| `nvim` | Neovim ([README](nvim/.config/nvim/README.md)) | all |
+| `alacritty` | Terminus, CGA colours | all |
+| `zsh` | `.zshrc`, `.zprofile` | all |
+| `git` | `.gitconfig`, gitleaks hooks | all |
+| `arch` | Alacritty font | Arch |
+| `macos` | Alacritty font | macOS |
 
 ## Setup
 
 ```sh
-# Arch: sudo pacman -S git stow    macOS: brew install git stow
+# needs git, stow, gitleaks
 git clone git@github.com:ewencb/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 stow nvim alacritty zsh git
-stow arch    # or: stow macos
+stow arch  # or macos
 ```
 
-`stow -D <package>` removes a package's links. Stow refuses to overwrite
-existing files, so move any old config out of the way first.
+Stow won't overwrite real files, so move old configs out first.
+`stow -D <pkg>` unlinks.
 
-## Adding a config
-
-Move it into a package folder with the same path it has under `$HOME`,
-then stow it:
+## Adding things
 
 ```sh
 mkdir -p ~/dotfiles/tmux
@@ -38,24 +32,15 @@ mv ~/.tmux.conf ~/dotfiles/tmux/
 cd ~/dotfiles && stow tmux
 ```
 
-Put config that only applies to one OS in its own package (e.g. `macos`,
-`arch`) and only stow it on that machine. Keep those files outside folders
-another package owns (hence `~/.config/alacritty-font.toml`, not a file
-inside `~/.config/alacritty/`): when only one package uses a folder, stow
-links the whole folder, so new files in it land in the repo automatically.
+OS-specific files go in `arch` or `macos`. Keep them out of folders
+another package uses, or stow links file by file instead of the whole
+folder and new files won't end up in the repo.
 
-Secrets and machine-specific environment variables go in
-`~/.zprofile.local`, which `.zprofile` sources and git never sees.
+Secrets go in `~/.zprofile.local`, which isn't tracked.
 
-## Secret scanning
+## Hooks
 
-The `git` package sets `core.hooksPath` to `~/.config/git/hooks`, so every
-repo on the machine runs `gitleaks` before each commit and blocks it if a
-staged change looks like a secret. Install gitleaks first
-(`sudo pacman -S gitleaks` / `brew install gitleaks`); without it the hook
-warns and lets the commit through.
-
-Every hook name in that folder links to one script, which then runs the
-repo's own `.git/hooks/<name>`, so per-repo hooks keep working. Repos that
-set their own `core.hooksPath` (e.g. husky) skip the global hooks. For a
-false positive, add a `gitleaks:allow` comment on the line.
+`core.hooksPath` points every repo at `~/.config/git/hooks`. Pre-commit
+runs gitleaks, then each hook falls through to the repo's own
+`.git/hooks/<name>`. Repos with their own `core.hooksPath` (husky etc.)
+skip it. Use `gitleaks:allow` on a line for false positives.
