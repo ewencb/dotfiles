@@ -1,41 +1,44 @@
 return {
-	{
-		"nvim-mini/mini.nvim",
-		version = "*",
-		config = function()
-			require("mini.ai").setup()
-			require("mini.surround").setup()
-			require("mini.files").setup()
-			-- keeps mini.files / mini.pick from falling back to Nerd Font glyphs
-			require("mini.icons").setup({ style = "ascii" })
-			require("mini.diff").setup({ view = { style = "sign" } })
-			require("mini.pick").setup()
-			require("mini.extra").setup()
+	"nvim-mini/mini.nvim",
+	version = "*",
+	config = function()
+		require("mini.ai").setup() -- more text objects: a)/i), aq/iq, af/if, ...
+		require("mini.surround").setup() -- sa / sd / sr: add, delete, replace surroundings
+		require("mini.files").setup()
+		require("mini.icons").setup({ style = "ascii" }) -- stops files/pick falling back to Nerd Font glyphs
+		require("mini.diff").setup({ view = { style = "sign" } }) -- git changes in the sign column; [h / ]h
+		require("mini.pick").setup()
+		require("mini.extra").setup()
 
-			vim.keymap.set("n", "<leader>o", function()
-				local bufname = vim.api.nvim_buf_get_name(0)
-				if bufname == "" then
-					require("mini.files").open(vim.uv.cwd())
-				else
-					require("mini.files").open(bufname)
-					require("mini.files").reveal_cwd()
-				end
-			end, { desc = "Explorer (mini.files)" })
+		local function map(lhs, rhs, desc)
+			vim.keymap.set("n", lhs, rhs, { desc = desc })
+		end
 
-			vim.keymap.set("n", "<leader>O", function()
-				require("mini.files").open(vim.uv.cwd())
-			end, { desc = "Explorer (cwd)" })
+		-- File explorer
+		local files = require("mini.files")
+		map("<leader>o", function()
+			local path = vim.api.nvim_buf_get_name(0)
+			if path == "" then
+				files.open(vim.uv.cwd())
+			else
+				files.open(path)
+				files.reveal_cwd()
+			end
+		end, "Explorer (current file)")
+		map("<leader>O", function()
+			files.open(vim.uv.cwd())
+		end, "Explorer (cwd)")
 
-			local pick, extra = MiniPick.builtin, MiniExtra.pickers
-			vim.keymap.set("n", "<leader>/f", pick.files, { desc = "Find files" })
-			vim.keymap.set("n", "<leader>/g", pick.grep_live, { desc = "Live grep" })
-			vim.keymap.set("n", "<leader>/b", pick.buffers, { desc = "Buffers" })
-			vim.keymap.set("n", "<leader>/h", pick.help, { desc = "Help" })
-			vim.keymap.set("n", "<leader>/o", extra.oldfiles, { desc = "Recent files" })
-			vim.keymap.set("n", "<leader>/d", extra.diagnostic, { desc = "Diagnostics" })
-			vim.keymap.set("n", "<leader>/s", function()
-				extra.lsp({ scope = "document_symbol" })
-			end, { desc = "Symbols (buffer)" })
-		end,
-	},
+		-- Pickers
+		local pick, extra = require("mini.pick").builtin, require("mini.extra").pickers
+		map("<leader>/f", pick.files, "Find files")
+		map("<leader>/g", pick.grep_live, "Live grep")
+		map("<leader>/b", pick.buffers, "Buffers")
+		map("<leader>/h", pick.help, "Help")
+		map("<leader>/o", extra.oldfiles, "Recent files")
+		map("<leader>/d", extra.diagnostic, "Diagnostics")
+		map("<leader>/s", function()
+			extra.lsp({ scope = "document_symbol" })
+		end, "Symbols (buffer)")
+	end,
 }
