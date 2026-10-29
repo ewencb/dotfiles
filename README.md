@@ -11,8 +11,8 @@ place.
 | `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
 | `zsh` | `.zshrc` (vim mode, prompt, plugins) and `.zprofile` (PATH, env) | all |
 | `git` | `.gitconfig`: name and email | all |
-| `arch` | Alacritty font: `Terminus` | Arch |
-| `macos` | Alacritty font: `Terminus (TTF)` | macOS |
+| `arch` | `~/.config/alacritty-font.toml`: `Terminus` | Arch |
+| `macos` | `~/.config/alacritty-font.toml`: `Terminus (TTF)` | macOS |
 
 ## Setup
 
@@ -39,7 +39,10 @@ cd ~/dotfiles && stow tmux
 ```
 
 Put config that only applies to one OS in its own package (e.g. `macos`,
-`arch`) and only stow it on that machine.
+`arch`) and only stow it on that machine. Keep those files outside folders
+another package owns (hence `~/.config/alacritty-font.toml`, not a file
+inside `~/.config/alacritty/`): when only one package uses a folder, stow
+links the whole folder, so new files in it land in the repo automatically.
 
 Secrets and machine-specific environment variables go in
 `~/.zprofile.local`, which `.zprofile` sources and git never sees.
