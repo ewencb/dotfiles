@@ -9,7 +9,7 @@ place.
 | --- | --- | --- |
 | `nvim` | Neovim config, see [its README](nvim/.config/nvim/README.md) | all |
 | `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
-| `zsh` | `.zshrc`: vim mode, two-line prompt, fzf and plugins | all |
+| `zsh` | `.zshrc` (vim mode, prompt, plugins) and `.zprofile` (PATH, env) | all |
 | `git` | `.gitconfig`: name and email | all |
 
 ## Setup
@@ -37,3 +37,6 @@ cd ~/dotfiles && stow tmux
 
 Put config that only applies to one OS in its own package (e.g. `macos`,
 `arch`) and only stow it on that machine.
+
+Secrets and machine-specific environment variables go in
+`~/.zprofile.local`, which `.zprofile` sources and git never sees.

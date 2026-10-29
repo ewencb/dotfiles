@@ -129,7 +129,3 @@ _src /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
      /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 unfunction _src
-
-# Env Variables ------------------------------------------------------------
-
-export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
