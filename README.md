@@ -11,6 +11,8 @@ place.
 | `alacritty` | Alacritty terminal: Terminus font, IBM CGA colours | all |
 | `zsh` | `.zshrc` (vim mode, prompt, plugins) and `.zprofile` (PATH, env) | all |
 | `git` | `.gitconfig`: name and email | all |
+| `arch` | Alacritty font: `Terminus` | Arch |
+| `macos` | Alacritty font: `Terminus (TTF)` | macOS |
 
 ## Setup
 
@@ -19,6 +21,7 @@ place.
 git clone git@github.com:ewencb/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 stow nvim alacritty zsh git
+stow arch    # or: stow macos
 ```
 
 `stow -D <package>` removes a package's links. Stow refuses to overwrite

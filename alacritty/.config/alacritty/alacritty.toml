@@ -1,5 +1,8 @@
+# Font family differs per OS: set in font.toml from the arch or macos package
+[general]
+import = ["~/.config/alacritty/font.toml"]
+
 [font]
-normal = { family = "Terminus (TTF)" }
 size = 14
 
 [[keyboard.bindings]]

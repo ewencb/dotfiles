@@ -1,0 +1,3 @@
+# Imported by alacritty.toml; Arch's terminus-font package names it plain "Terminus"
+[font]
+normal = { family = "Terminus" }
