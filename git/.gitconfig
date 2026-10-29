@@ -1,3 +1,7 @@
 [user]
 	name = Christopher Ewen
 	email = me@cewen.io
+
+[core]
+	# Global hooks: gitleaks secret scan on commit, then the repo's own hooks
+	hooksPath = ~/.config/git/hooks

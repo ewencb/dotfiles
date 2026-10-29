@@ -1,2 +1,4 @@
 .DS_Store
 .rumdl_cache/
+# Git's plaintext credential store, if ever used (~/.config/git is linked here)
+git/.config/git/credentials

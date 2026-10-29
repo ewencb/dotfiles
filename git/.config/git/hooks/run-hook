@@ -1,0 +1,23 @@
+#!/bin/sh
+# Global git hooks (core.hooksPath in .gitconfig). Each hook name in this
+# folder is a symlink to this script: pre-commit scans staged changes with
+# gitleaks, then every hook hands over to the repo's own .git/hooks/<name>,
+# which a global hooksPath would otherwise skip.
+name=$(basename "$0")
+
+if [ "$name" = pre-commit ]; then
+	if command -v gitleaks >/dev/null 2>&1; then
+		if ! gitleaks git --pre-commit --staged --redact --no-banner --verbose --log-level warn; then
+			echo "gitleaks: possible secret in staged changes, commit blocked." >&2
+			echo "False positive? Add a 'gitleaks:allow' comment on that line." >&2
+			exit 1
+		fi
+	else
+		echo "gitleaks not installed: skipping secret scan" >&2
+	fi
+fi
+
+repo_hook="$(git rev-parse --git-common-dir)/hooks/$name"
+if [ -x "$repo_hook" ]; then
+	exec "$repo_hook" "$@"
+fi
