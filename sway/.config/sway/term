@@ -1,0 +1,29 @@
+#!/bin/sh
+# Open a terminal in the focused terminal's working directory, or in ~ otherwise.
+
+pid=$(swaymsg -t get_tree | python3 -c '
+import json, sys
+
+def focused(node):
+    if node.get("focused"):
+        return node
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        found = focused(child)
+        if found:
+            return found
+
+node = focused(json.load(sys.stdin))
+if node and node.get("app_id") == "Alacritty":
+    print(node["pid"])
+')
+
+# The terminal's first child is its shell, whose cwd is where we want to be
+if [ -n "$pid" ]; then
+    shell=$(pgrep -oP "$pid")
+    cwd=$(readlink "/proc/$shell/cwd")
+fi
+
+if [ -n "$cwd" ]; then
+    exec alacritty --working-directory "$cwd"
+fi
+exec alacritty

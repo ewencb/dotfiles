@@ -7,7 +7,7 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $term alacritty
+set $term ~/.config/sway/term
 set $lock ~/.local/bin/lock
 
 set $shots ~/pictures/screenshots
@@ -188,6 +188,9 @@ bindsym $mod+F12 exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
 bindsym $mod+F7 exec playerctl previous
 bindsym $mod+F8 exec playerctl play-pause
 bindsym $mod+F9 exec playerctl next
+
+### Characters (US layout has no £, so Alt+3 types it like on a Mac)
+bindsym Mod1+3 exec wtype £
 
 ### Window rules
 for_window [window_role="pop-up"] floating enable
