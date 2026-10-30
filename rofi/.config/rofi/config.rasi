@@ -1,0 +1,33 @@
+// ~/.config/rofi/config.rasi
+// Launcher + file opener. Files open via xdg-open, so mimeapps.list
+// decides the app (pdf -> zathura, images -> swayimg, text -> nvim).
+
+configuration {
+    modes:            "drun,run,find:~/.config/rofi/scripts/find-files,filebrowser,window";
+    terminal:         "alacritty";
+    font:             "Terminus 14";
+    show-icons:       false;
+    drun-display-format: "{name}";
+    matching:         "fuzzy";
+    sort:             true;
+    sorting-method:   "fzf";
+
+    display-drun:             "apps";
+    display-run:              "run";
+    display-filebrowser:      "files";
+    display-window:           "windows";
+
+    // Tab completes/cycles rows; these switch between modes.
+    kb-mode-next:     "Control+Tab";
+    kb-mode-previous: "Control+ISO_Left_Tab";
+
+    filebrowser {
+        directory:         "~";
+        directories-first: true;
+        sorting-method:    "name";
+        command:           "xdg-open";
+    }
+
+}
+
+@theme "cga"

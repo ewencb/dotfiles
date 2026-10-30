@@ -1,0 +1,85 @@
+// ~/.config/rofi/cga.rasi
+// CGA palette, to match sway, the bar and mako.
+
+* {
+    black:   #000000;
+    blue:    #0000aa;
+    cyan:    #00aaaa;
+    red:     #aa0000;
+    grey:    #aaaaaa;
+    dgrey:   #555555;
+    lblue:   #5555ff;
+    lcyan:   #55ffff;
+    yellow:  #ffff55;
+    white:   #ffffff;
+
+    background-color: transparent;
+    text-color:       @grey;
+    font:             "Terminus 14";
+}
+
+window {
+    location:         center;
+    width:            800px;
+    background-color: @black;
+    border:           2px;
+    border-color:     @blue;
+    border-radius:    0;
+}
+
+mainbox {
+    padding:  0;
+    spacing:  0;
+    children: [ inputbar, message, listview, mode-switcher ];
+}
+
+inputbar {
+    padding:          4px 8px;
+    spacing:          8px;
+    background-color: @blue;
+    text-color:       @white;
+    children:         [ prompt, textbox-prompt-colon, entry, num-filtered-rows ];
+}
+prompt               { text-color: @lcyan; }
+textbox-prompt-colon { str: ">"; text-color: @lcyan; expand: false; }
+entry                { text-color: @white; cursor-color: @yellow; placeholder: ""; }
+num-filtered-rows    { text-color: @grey; }
+
+message  { padding: 4px 8px; border: 0 0 2px 0; border-color: @dgrey; }
+textbox  { text-color: @yellow; }
+
+listview {
+    lines:     12;
+    columns:   1;
+    padding:   4px 0;
+    spacing:   0;
+    scrollbar: false;
+    fixed-height: true;
+}
+
+element {
+    padding:  2px 8px;
+    spacing:  8px;
+}
+element normal.normal,
+element alternate.normal { text-color: @grey; }
+element normal.active,
+element alternate.active { text-color: @lcyan; }
+element normal.urgent,
+element alternate.urgent { text-color: @yellow; }
+element selected.normal,
+element selected.active  { background-color: @lcyan; text-color: @black; }
+element selected.urgent  { background-color: @red; text-color: @yellow; }
+
+element-text {
+    text-color:       inherit;
+    highlight:        bold;
+    vertical-align:   0.5;
+}
+
+mode-switcher {
+    border:       2px 0 0 0;
+    border-color: @dgrey;
+}
+button          { padding: 2px 8px; text-color: @dgrey; }
+button selected { background-color: @dgrey; text-color: @white; }

@@ -1,0 +1,14 @@
+#!/bin/sh
+# rofi script mode: fuzzy-find files under ~ and open them with xdg-open
+# (mimeapps.list picks the app: pdf -> zathura, images -> swayimg, ...).
+# Skips dotfiles/dirs and build junk so it stays fast.
+
+cd "$HOME" || exit 1
+
+if [ -n "$1" ]; then
+    setsid -f xdg-open "$HOME/$1" >/dev/null 2>&1
+    exit 0
+fi
+
+find -L . \( -name '.?*' -o -name node_modules -o -name target -o -name __pycache__ \) -prune \
+    -o -type f -printf '%P\n' 2>/dev/null
