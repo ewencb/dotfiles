@@ -1,0 +1,236 @@
+# ~/.config/sway/config
+# Minimal Sway config. Read `man 5 sway` for everything else.
+
+### Variables
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+set $lock ~/.local/bin/lock
+
+set $shots ~/pictures/screenshots
+
+### Appearance
+# CGA palette
+set $black    #000000
+set $blue     #0000aa
+set $green    #00aa00
+set $cyan     #00aaaa
+set $red      #aa0000
+set $magenta  #aa00aa
+set $brown    #aa5500
+set $grey     #aaaaaa
+set $dgrey    #555555
+set $lblue    #5555ff
+set $lcyan    #55ffff
+set $yellow   #ffff55
+set $white    #ffffff
+
+font pango:Terminus 14
+gaps inner 0
+set $menu wmenu-run -f "Terminus 14" -N 000000 -n aaaaaa -S 55ffff -s 000000 -M 000000 -m 55ffff
+
+# Window colours
+# class                 border  bg      text    indicator child_border
+client.focused          $blue   $blue   $white  $lblue    $blue
+client.focused_inactive $dgrey  $dgrey  $grey   $dgrey    $dgrey
+client.unfocused        $dgrey  $black  $grey   $dgrey    $dgrey
+client.urgent           $red    $red    $yellow $red      $red
+client.placeholder      $black  $black  $grey   $black    $black
+client.background       $black
+
+default_border pixel 2
+default_floating_border pixel 2
+
+# Desktop
+output * bg $black solid_color
+
+### Outputs
+# Get your monitor names with: swaymsg -t get_outputs
+# A 4K screen at scale 1.5 is 1440 logical pixels tall,
+# so the bottom monitor starts at y=1440.
+output DP-2 scale 1.5 pos 0 0
+output DP-1 scale 1.5 pos 0 1440
+
+# 1-5 on the bottom monitor
+workspace 1 output DP-1
+workspace 2 output DP-1
+workspace 3 output DP-1
+workspace 4 output DP-1
+workspace 5 output DP-1
+
+# 6-10 on the top monitor
+workspace 6 output DP-2
+workspace 7 output DP-2
+workspace 8 output DP-2
+workspace 9 output DP-2
+workspace 10 output DP-2
+
+### Input
+input type:keyboard {
+    repeat_delay 300
+    repeat_rate 40
+}
+input type:pointer {
+    accel_profile flat
+}
+
+# Same cursor everywhere, XWayland apps (Steam) included
+seat * xcursor_theme Adwaita 24
+
+### Idle and lock
+exec swayidle -w \
+    timeout 600 '$lock' \
+    timeout 900 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+    before-sleep '$lock'
+
+# Don't lock or blank while something is fullscreen (games, video)
+for_window [all] inhibit_idle fullscreen
+
+### Autostart
+exec mako
+
+# logout etc
+set $power "power: (l)ock  (e)xit  (s)uspend  (r)eboot  (p)oweroff  [esc]"
+mode $power {
+    bindsym l exec $lock, mode "default"
+    bindsym e exec swaymsg exit
+    bindsym s exec systemctl suspend, mode "default"
+    bindsym r exec systemctl reboot
+    bindsym p exec systemctl poweroff
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+bindsym $mod+Shift+q mode $power
+
+### Basics
+bindsym $mod+Return exec $term
+bindsym $mod+Space exec $menu
+bindsym $mod+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Ctrl+q exec $lock
+floating_modifier $mod normal
+
+### Focus and move
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+### Workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+bindsym $mod+Tab workspace back_and_forth
+
+### Layout
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+Shift+t focus mode_toggle
+bindsym $mod+a focus parent
+
+### Scratchpad
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+bindsym $mod+p [app_id="Bitwarden"] scratchpad show
+
+### Resize
+mode "resize" {
+    bindsym $left resize shrink width 20px
+    bindsym $down resize grow height 20px
+    bindsym $up resize shrink height 20px
+    bindsym $right resize grow width 20px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### Screenshots (saved to ~/pictures/screenshots and copied)
+bindsym $mod+Shift+s exec grim -g "$(slurp)" - | tee $shots/$(date +%F_%H-%M-%S).png | wl-copy
+bindsym $mod+Shift+a exec grim - | tee $shots/$(date +%F_%H-%M-%S).png | wl-copy
+
+### Volume (HHKB has no media keys, so use F10 to F12)
+bindsym $mod+F10 exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym $mod+F11 exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym $mod+F12 exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+
+### Media (F7 to F9, next to volume)
+bindsym $mod+F7 exec playerctl previous
+bindsym $mod+F8 exec playerctl play-pause
+bindsym $mod+F9 exec playerctl next
+
+### Window rules
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="dialog"] floating enable
+for_window [app_id="pavucontrol"] floating enable
+for_window [class="steam" title="^(Friends List|Steam Settings)$"] floating enable
+
+# Bitwarden lives in the scratchpad, toggled with $mod+p
+for_window [app_id="Bitwarden"] floating enable, resize set 1200 800, move scratchpad
+
+focus_on_window_activation focus
+
+### Bar
+bar {
+    position top
+    status_command i3status-rs
+    font pango:Terminus 14
+    tray_output none
+    colors {
+        background $black
+        statusline $grey
+        separator  $dgrey
+
+        # class            border  bg      text
+        focused_workspace  $blue   $blue   $white
+        active_workspace   $dgrey  $dgrey  $white
+        inactive_workspace $black  $black  $grey
+        urgent_workspace   $red    $red    $yellow
+        binding_mode       $brown  $brown  $white
+    }
+}
+
+exec swaymsg "workspace number 1"
+
+### Startup apps
+assign [app_id="firefox"] workspace number 1
+assign [class="steam"] workspace number 5
+assign [app_id="discord"] workspace number 6
+assign [class="discord"] workspace number 6
+
+exec firefox
+exec steam
+exec discord
+exec bitwarden-desktop
+exec autotiling
+
+# Keep this last: sets up portals, screen sharing and dbus.
+include /etc/sway/config.d/*
