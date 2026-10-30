@@ -12,15 +12,16 @@ path=(~/.local/bin ~/.cargo/bin $path)
 # Environment -----------------------------------------------------------
 export EDITOR=nvim
 export VISUAL=nvim
-export LANG=en_US.UTF-8
 export HOMEBREW_NO_ANALYTICS=1
 
 # System CA bundle, for prebuilt apps (BambuStudio) that can't find it (Arch only)
 [[ -f /etc/ssl/certs/ca-certificates.crt ]] &&
   export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
-# SSH keys come from the Bitwarden agent, whose socket differs per OS
+# Per-OS settings. The Bitwarden SSH agent socket differs; Arch takes LANG
+# from /etc/locale.conf, macOS needs it set here
 if [[ $OSTYPE == darwin* ]]; then
+  export LANG=en_US.UTF-8
   export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 else
   export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
