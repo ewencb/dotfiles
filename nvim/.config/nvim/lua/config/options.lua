@@ -31,13 +31,13 @@ vim.o.completeopt = "menuone,noselect,popup"
 
 -- Unit files outside /etc/systemd aren't detected by default
 vim.filetype.add({
-	extension = {
-		service = "systemd",
-		socket = "systemd",
-		timer = "systemd",
-		mount = "systemd",
-		automount = "systemd",
-		target = "systemd",
-		slice = "systemd",
-	},
+    extension = {
+        service = "systemd",
+        socket = "systemd",
+        timer = "systemd",
+        mount = "systemd",
+        automount = "systemd",
+        target = "systemd",
+        slice = "systemd",
+    },
 })
