@@ -1,0 +1,23 @@
+# ~/.config/mako/config
+# CGA palette, to match sway and the bar.
+
+font=Terminus 14
+background-color=#000000
+text-color=#aaaaaa
+border-color=#00aaaa
+progress-color=over #0000aa
+border-size=2
+border-radius=0
+padding=10
+margin=10
+width=500
+default-timeout=8000
+anchor=top-right
+
+[urgency=low]
+border-color=#555555
+
+[urgency=critical]
+border-color=#ff5555
+text-color=#ffffff
+default-timeout=0

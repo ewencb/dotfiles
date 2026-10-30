@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Neovim (Alacritty)
+Comment=Edit text files in Neovim
+Exec=alacritty -e nvim %F
+Icon=nvim
+MimeType=text/plain;text/markdown;text/x-shellscript;application/x-shellscript;application/json;application/toml;text/x-python;
+NoDisplay=true

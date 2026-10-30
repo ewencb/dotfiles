@@ -1,0 +1,25 @@
+color=000000
+font=Terminess Nerd Font
+font-size=24
+indicator-radius=80
+indicator-thickness=6
+show-failed-attempts
+inside-color=000000
+inside-clear-color=000000
+inside-ver-color=000000
+inside-wrong-color=000000
+ring-color=555555
+ring-clear-color=aaaaaa
+ring-ver-color=55ffff
+ring-wrong-color=ff5555
+key-hl-color=55ffff
+bs-hl-color=ff5555
+line-color=000000
+line-clear-color=000000
+line-ver-color=000000
+line-wrong-color=000000
+separator-color=000000
+text-color=aaaaaa
+text-clear-color=aaaaaa
+text-ver-color=55ffff
+text-wrong-color=ff5555

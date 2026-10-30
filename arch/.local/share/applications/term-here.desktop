@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal Here
+Comment=Open Alacritty in this folder
+Exec=alacritty --working-directory %f
+Icon=Alacritty
+MimeType=inode/directory;
+NoDisplay=true

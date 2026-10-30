@@ -1,0 +1,71 @@
+# ~/.config/i3status-rust/config.toml
+# CGA status bar, plain text labels (no icon font needed).
+
+[theme]
+theme ="plain"
+[theme.overrides]
+idle_bg = "#000000"
+idle_fg = "#aaaaaa"
+info_bg = "#000000"
+info_fg = "#55ffff"
+good_bg = "#000000"
+good_fg = "#55ff55"
+warning_bg = "#000000"
+warning_fg = "#ffff55"
+critical_bg = "#ff5555"
+critical_fg = "#000000"
+separator = " | "
+separator_bg = "#000000"
+separator_fg = "#555555"
+
+[icons]
+icons ="none"
+
+[[block]]
+block ="cpu"
+format ="CPU $utilization"
+interval = 2
+
+[[block]]
+block ="memory"
+format ="MEM $mem_used/$mem_total"
+
+[[block]]
+block ="disk_space"
+path ="/"
+format ="ROOT $available.eng(w:3, p:Gi, force_prefix:true) free"
+
+[[block]]
+block ="disk_space"
+path ="/mnt/storage"
+format ="DATA $available.eng(w:3, p:Gi, force_prefix:true) free"
+
+[[block]]
+block ="net"
+format ="NET ↓$speed_down.eng(w:4, p:K, force_prefix:true) ↑$speed_up.eng(w:3, p:K, force_prefix:true)"
+
+[[block]]
+block ="sound"
+format ="VOL {$volume|MUTE}"
+[[block.click]]
+button ="left"
+cmd ="pavucontrol"
+
+[[block]]
+block = "packages"
+package_manager = ["pacman", "aur"]
+aur_command = "paru -Qua"
+interval = 1800
+error_interval = 300
+format = " UPD $pacman+$aur "
+format_singular = " UPD 1 "
+format_up_to_date = ""
+critical_updates_regex = "^(linux|linux-firmware|systemd|mesa) "
+[[block.click]]
+button = "left"
+cmd = "alacritty -e paru"
+
+[[block]]
+block ="time"
+interval = 1 
+format ="$timestamp.datetime(f:'%Y-%m-%d %H:%M:%S')"

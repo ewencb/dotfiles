@@ -1,0 +1,118 @@
+#!/bin/sh
+# Lock with fastfetch on one screen and the year's calendar on the other,
+# both laid out like a terminal, in the terminal's colours.
+#
+# Speed: the calendar is rendered once a day and reused, font measurements
+# are cached, and PNGs are written with light compression.
+dir=${XDG_RUNTIME_DIR:-/tmp}
+font=$(fc-match -f '%{file}' 'Terminess Nerd Font:style=Regular')
+bold=$(fc-match -f '%{file}' 'Terminess Nerd Font:style=Bold')
+size=44
+padx=40
+pady=30
+fg='#aaaaaa'
+bg='#000000'
+fetch="$dir/lock-fetch.png"
+cal_img="$dir/lock-cal-$(date +%F).png"
+metrics="$dir/lock-metrics2-$size"
+
+# The 16 terminal colours (VGA)
+palette="#000000 #aa0000 #00aa00 #aa5500 #0000aa #aa00aa #00aaaa #aaaaaa
+#555555 #ff5555 #55ff55 #ffff55 #5555ff #ff55ff #55ffff #ffffff"
+
+# Character width, line height and ascent for this font and size, measured once
+if [ ! -s "$metrics" ]; then
+  cw=$(magick -font "$font" -pointsize "$size" label:'0000000000' -format '%[fx:w/10]' info:)
+  h1=$(magick -font "$font" -pointsize "$size" label:'0' -format '%h' info:)
+  h2=$(magick -font "$font" -pointsize "$size" label:'0
+0' -format '%h' info:)
+  asc=$(magick -debug annotate xc: -font "$font" -pointsize "$size" -annotate 0 0 null: 2>&1 |
+    sed -n 's/.*ascent: \([0-9.]*\).*/\1/p' | head -1)
+  echo "$cw $((h2 - h1)) $asc" > "$metrics"
+fi
+read -r cw lh asc < "$metrics"
+
+# Turn text with ANSI colour codes into ImageMagick drawing commands (MVG):
+# a background box and a run of text for each stretch of one colour, all
+# on the same baseline so runs line up whatever letters they contain.
+ansi_to_mvg() {
+  awk -v cw="$cw" -v lh="$lh" -v asc="$asc" -v px="$padx" -v py="$pady" \
+    -v pal="$palette" -v dfg="$fg" -v dbg="$bg" -v font="$font" -v bold="$bold" '
+  function reset() { f = dfg; b = ""; bo = 0; rev = 0 }
+  function hex(r, g, b) { return sprintf("#%02x%02x%02x", r, g, b) }
+  function c256(n,   r, g, b) {
+    if (n < 16) return colour[n + 1]
+    if (n >= 232) { g = 8 + (n - 232) * 10; return hex(g, g, g) }
+    n -= 16; r = int(n / 36); g = int(n / 6) % 6; b = n % 6
+    return hex(r ? r * 40 + 55 : 0, g ? g * 40 + 55 : 0, b ? b * 40 + 55 : 0)
+  }
+  function sgr(s,   p, n, i, c) {
+    n = split(s, p, ";")
+    if (n == 0) { reset(); return }
+    for (i = 1; i <= n; i++) {
+      c = p[i] + 0
+      if (c == 0) reset()
+      else if (c == 1) bo = 1
+      else if (c == 22) bo = 0
+      else if (c == 7) rev = 1
+      else if (c == 27) rev = 0
+      else if (c >= 30 && c <= 37) f = colour[c - 29]
+      else if (c >= 90 && c <= 97) f = colour[c - 81]
+      else if (c == 39) f = dfg
+      else if (c >= 40 && c <= 47) b = colour[c - 39]
+      else if (c >= 100 && c <= 107) b = colour[c - 91]
+      else if (c == 49) b = ""
+      else if (c == 38 || c == 48) {
+        if (p[i + 1] == 5) { v = c256(p[i + 2]); i += 2 }
+        else if (p[i + 1] == 2) { v = hex(p[i + 2], p[i + 3], p[i + 4]); i += 4 }
+        if (c == 38) f = v; else b = v
+      }
+    }
+  }
+  function emit(t,   x, y, n, tf, tb, e) {
+    n = length(t)
+    if (n == 0) return
+    x = px + col * cw; y = py + line * lh
+    tf = rev ? (b == "" ? dbg : b) : f
+    tb = rev ? f : b
+    if (tb != "")
+      printf "fill \"%s\" rectangle %d,%d %d,%d\n", tb, x, y, x + n * cw - 1, y + lh - 1
+    if (t ~ /[^ ]/) {
+      e = t; gsub(/\\/, "\\\\", e); gsub(/"/, "\\\"", e)
+      printf "fill \"%s\" font \"%s\" text %d,%d \"%s\"\n", tf, bo ? bold : font, x, y + asc, e
+    }
+    col += n
+  }
+  BEGIN { split(pal, colour); reset(); print "font-size '"$size"'" }
+  {
+    line = NR - 1; col = 0; s = $0
+    while (match(s, /\033\[[0-9;]*m/)) {
+      emit(substr(s, 1, RSTART - 1))
+      sgr(substr(s, RSTART + 2, RLENGTH - 3))
+      s = substr(s, RSTART + RLENGTH)
+    }
+    emit(s)
+  }'
+}
+
+# render COMMAND-NAME OUTPUT FILE
+render() {
+  printf '~\n❯ %s\n%s\n\n~\n❯ █\n' "$1" "$2" | ansi_to_mvg > "$3.mvg"
+  magick -size 3840x2160 xc:"$bg" -draw "@$3.mvg" \
+    -define png:compression-level=1 "$3"
+  rm -f "$3.mvg"
+}
+
+# --- calendar (once a day, in the background) -----------------------------
+[ -f "$cal_img" ] || {
+  rm -f "$dir"/lock-cal-*.png
+  render "cal -y" "$(cal -y --color=always)" "$cal_img"
+} &
+
+# --- fastfetch ------------------------------------------------------------
+render fastfetch "$(fastfetch --pipe false | sed \
+  -e 's/\(Shell\x1b\[m: \x1b\[m\)sh$/\1zsh/' \
+  -e 's/\(Terminal\x1b\[m: \x1b\[m\)lock$/\1alacritty/')" "$fetch"
+
+wait
+exec swaylock -f -i DP-1:"$fetch" -i DP-2:"$cal_img"
