@@ -8,7 +8,47 @@ return {
 		require("mini.icons").setup({ style = "ascii" }) -- stops files/pick falling back to Nerd Font glyphs
 		require("mini.diff").setup({ view = { style = "sign" } }) -- git changes in the sign column; [h / ]h
 		require("mini.pick").setup()
+		-- Current item links to CursorLine, which has no 256-colour value: invisible without termguicolors
+		vim.api.nvim_set_hl(0, "MiniPickMatchCurrent", { link = "Visual" })
 		require("mini.extra").setup()
+
+		-- Popup of next keys after a prefix (leader, g, [ ], Ctrl+w, z, marks, registers)
+		local clue = require("mini.clue")
+		clue.setup({
+			triggers = {
+				{ mode = "n", keys = "<Leader>" },
+				{ mode = "x", keys = "<Leader>" },
+				{ mode = "n", keys = "g" },
+				{ mode = "x", keys = "g" },
+				{ mode = "n", keys = "[" },
+				{ mode = "n", keys = "]" },
+				{ mode = "n", keys = "<C-w>" },
+				{ mode = "n", keys = "z" },
+				{ mode = "x", keys = "z" },
+				{ mode = "n", keys = "'" },
+				{ mode = "n", keys = "`" },
+				{ mode = "x", keys = "'" },
+				{ mode = "x", keys = "`" },
+				{ mode = "n", keys = '"' },
+				{ mode = "x", keys = '"' },
+				{ mode = "i", keys = "<C-r>" },
+				{ mode = "c", keys = "<C-r>" },
+				{ mode = "i", keys = "<C-x>" },
+			},
+			clues = {
+				{ mode = "n", keys = "<Leader>n", desc = "+Notes" },
+				{ mode = "x", keys = "<Leader>n", desc = "+Notes" },
+				{ mode = "n", keys = "<Leader>/", desc = "+Search" },
+				clue.gen_clues.builtin_completion(),
+				clue.gen_clues.g(),
+				clue.gen_clues.square_brackets(),
+				clue.gen_clues.marks(),
+				clue.gen_clues.registers(),
+				clue.gen_clues.windows(),
+				clue.gen_clues.z(),
+			},
+			window = { delay = 300 },
+		})
 
 		local function map(lhs, rhs, desc)
 			vim.keymap.set("n", lhs, rhs, { desc = desc })

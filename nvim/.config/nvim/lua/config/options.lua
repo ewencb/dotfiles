@@ -29,6 +29,31 @@ vim.o.autocomplete = true
 vim.o.complete = "o,.,w,b,u"
 vim.o.completeopt = "menuone,noselect,popup"
 
+-- Equalise split widths whenever a window opens. 'equalalways' covers plain
+-- splits, but sized splits like Claude's "{N}vsplit" keep their width, so
+-- rebalance after they settle. Floats (pickers, popups) are skipped
+vim.api.nvim_create_autocmd("WinNew", {
+    callback = function()
+        local win = vim.api.nvim_get_current_win()
+        if vim.api.nvim_win_get_config(win).relative ~= "" then
+            return
+        end
+        vim.schedule(function()
+            vim.cmd("wincmd =")
+        end)
+    end,
+})
+
+-- Rebalance splits in every tab when the terminal itself is resized,
+-- then return to the tab you were on
+vim.api.nvim_create_autocmd("VimResized", {
+    callback = function()
+        local tab = vim.api.nvim_get_current_tabpage()
+        vim.cmd("tabdo wincmd =")
+        vim.api.nvim_set_current_tabpage(tab)
+    end,
+})
+
 -- Unit files outside /etc/systemd aren't detected by default
 vim.filetype.add({
     extension = {

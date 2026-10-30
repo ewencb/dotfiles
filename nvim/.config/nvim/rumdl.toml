@@ -1,0 +1,5 @@
+# Passed to the rumdl language server by lua/config/lsp.lua.
+# Wrap Markdown prose at 79 columns (PEP 8) when formatting
+[MD013]
+line-length = 79
+reflow = true

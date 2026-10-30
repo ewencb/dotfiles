@@ -53,6 +53,11 @@ vim.lsp.config("lua_ls", {
 	},
 })
 
+-- Markdown wraps at 79 columns (PEP 8) in every project: see rumdl.toml
+vim.lsp.config("rumdl", {
+	cmd = { "rumdl", "server", "--config", vim.fn.stdpath("config") .. "/rumdl.toml" },
+})
+
 vim.lsp.enable(vim.tbl_keys(M.servers))
 
 -- Neovim already maps K (hover), grn (rename), gra (code action),
