@@ -100,14 +100,6 @@ alias ll='ls -lh'
 alias la='ls -lAh'
 alias grep='grep --color=auto'
 alias vim='nvim'
-alias chat='(cd ~/.claude-chat && claude)'
-
-# Functions -------------------------------------------------------------
-# cs: open a cheatsheet with fuzzy search, e.g. `cs zat`
-cs() {
-  local d=~/documents/notes/cheatsheets f
-  f=$(ls "$d" | fzf --query="$1" --select-1) && nvim "$d/$f"
-}
 
 # Plugins ---------------------------------------------------------------
 # Looks in Arch and Homebrew locations; skips anything not installed.
