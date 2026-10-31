@@ -1,7 +1,15 @@
--- Wrap at 79 columns while typing (PEP 8); rumdl reflows the whole file on save
-vim.opt_local.textwidth = 79
-vim.opt_local.colorcolumn = "80"
-vim.opt_local.formatoptions:append("t")
+-- Wrap at 79 columns while typing (PEP 8); rumdl reflows the whole file on save.
+-- The notes vault soft-wraps instead, one line per paragraph, as Obsidian expects
+if vim.startswith(vim.api.nvim_buf_get_name(0), vim.fs.normalize("~/notes") .. "/") then
+	vim.opt_local.textwidth = 0
+	vim.opt_local.colorcolumn = ""
+	vim.opt_local.wrap = true
+	vim.opt_local.linebreak = true
+else
+	vim.opt_local.textwidth = 79
+	vim.opt_local.colorcolumn = "80"
+	vim.opt_local.formatoptions:append("t")
+end
 
 -- Indent by 2 spaces: > and < shift lines, Tab inserts
 vim.opt_local.shiftwidth = 2

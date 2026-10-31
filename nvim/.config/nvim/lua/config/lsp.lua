@@ -53,9 +53,16 @@ vim.lsp.config("lua_ls", {
 	},
 })
 
--- Markdown wraps at 79 columns (PEP 8) in every project: see rumdl.toml
+-- Markdown wraps at 79 columns (PEP 8) in every project: see rumdl.toml.
+-- Not in the notes vault, which stays as stock Obsidian writes it: one line per paragraph
 vim.lsp.config("rumdl", {
 	cmd = { "rumdl", "server", "--config", vim.fn.stdpath("config") .. "/rumdl.toml" },
+	root_dir = function(bufnr, on_dir)
+		local path = vim.api.nvim_buf_get_name(bufnr)
+		if not vim.startswith(path, vim.fs.normalize("~/notes") .. "/") then
+			on_dir(vim.fs.root(bufnr, ".git") or vim.fs.dirname(path))
+		end
+	end,
 })
 
 vim.lsp.enable(vim.tbl_keys(M.servers))

@@ -1,9 +1,9 @@
--- Name files after the title (dm-tips.md) instead of a random ID
+-- Name files after the title (DM tips.md), as Obsidian does, instead of a random ID
 local function note_id(title)
-    return title and title:gsub(" ", "-"):gsub("[^%w-]", ""):lower() or tostring(os.time())
+    return title or tostring(os.time())
 end
 
--- Wrap text on one line in a wiki link, vimwiki style: [[pacman]] or [[dm-tips|DM tips]]
+-- Wrap text on one line in a wiki link, vimwiki style: [[pacman]] or [[DM tips]]
 local function make_link(row, scol, ecol)
     local text = vim.api.nvim_buf_get_text(0, row, scol, row, ecol, {})[1]
     local lead, body = text:match("^(%s*)(.-)%s*$")
@@ -11,8 +11,7 @@ local function make_link(row, scol, ecol)
         return
     end
     scol, ecol = scol + #lead, scol + #lead + #body
-    local id = note_id(body)
-    local link = id == body and "[[" .. id .. "]]" or "[[" .. id .. "|" .. body .. "]]"
+    local link = "[[" .. body .. "]]"
     vim.api.nvim_buf_set_text(0, row, scol, row, ecol, { link })
     vim.api.nvim_win_set_cursor(0, { row + 1, scol })
 end
@@ -254,13 +253,16 @@ return {
     opts = {
         legacy_commands = false,
         workspaces = { { name = "notes", path = "~/notes" } },
-        notes_subdir = "inbox",
-        new_notes_location = "notes_subdir",
+        new_notes_location = "notes_subdir", -- with no notes_subdir: the vault root, which is flat
         daily_notes = { folder = "daily", date_format = "%Y-%m-%d", template = "daily.md" },
         templates = { folder = "templates", date_format = "%Y-%m-%d" },
         note_id_func = note_id,
         checkbox = { order = { " ", "x" } },
         picker = { name = "mini.pick" },
         ui = { enable = false }, -- render-markdown already does this
+        -- No YAML block: awkward to edit on the phone, and obsidian.nvim would rewrite it on every save
+        frontmatter = { enabled = false },
+        -- New notes start from templates/note.md, which is just the title
+        note = { template = "note.md" },
     },
 }

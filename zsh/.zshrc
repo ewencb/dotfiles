@@ -100,7 +100,7 @@ alias ll='ls -lh'
 alias la='ls -lAh'
 alias grep='grep --color=auto'
 alias vim='nvim'
-alias notes='cd ~/notes && nvim home.md'  # notes vault start screen
+alias notes='cd ~/notes && nvim Home.md'  # notes vault start screen
 
 # Plugins ---------------------------------------------------------------
 # Looks in Arch and Homebrew locations; skips anything not installed.
