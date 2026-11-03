@@ -1,7 +1,14 @@
 [user]
 	name = Christopher Ewen
 	email = me@cewen.io
+	signingkey = /home/cewen/.ssh/id_cewen_yubikey.pub
 
 [core]
 	# Global hooks: gitleaks secret scan on commit, then the repo's own hooks
 	hooksPath = ~/.config/git/hooks
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[gpg "ssh"]
+	allowedSignersFile = /home/cewen/.ssh/allowed_signers
