@@ -101,7 +101,14 @@ alias la='ls -lAh'
 alias grep='grep --color=auto'
 alias vim='nvim'
 alias notes='cd ~/notes && nvim Home.md'  # notes vault start screen
-
+# n: open any note in the vault. `n` to pick, `n pac` to filter
+n() (
+  cd ~/notes || exit
+  local note
+  note=$(print -rl -- *.md(:r) daily/*.md(N:r) \
+    | fzf --select-1 --exit-0 --query="$*" --preview 'cat {}.md') || exit
+  nvim "$note.md"
+)
 # Plugins ---------------------------------------------------------------
 # Looks in Arch and Homebrew locations; skips anything not installed.
 _src() {
