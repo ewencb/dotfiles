@@ -20,6 +20,10 @@ metrics="$dir/lock-metrics2-$size"
 palette="#000000 #aa0000 #00aa00 #aa5500 #0000aa #aa00aa #00aaaa #aaaaaa
 #555555 #ff5555 #55ff55 #ffff55 #5555ff #ff55ff #55ffff #ffffff"
 
+# Colours from `theme`. The defaults above stay so the screen always locks.
+theme="$HOME/.local/state/theme/lock.sh"
+if [ -r "$theme" ]; then . "$theme"; fi
+
 # Character width, line height and ascent for this font and size, measured once
 if [ ! -s "$metrics" ]; then
   cw=$(magick -font "$font" -pointsize "$size" label:'0000000000' -format '%[fx:w/10]' info:)

@@ -1,0 +1,205 @@
+#!/bin/sh
+# theme [name]   apply a theme from ~/.config/theme/, or reapply the current one
+# theme -l       list themes
+#
+# Writes one small file per app, mostly to ~/.local/state/theme/, which each
+# app's config includes. Edit the theme file, never the generated files.
+set -eu
+
+src="$HOME/.config/theme"
+out="$HOME/.local/state/theme"
+
+case "${1:-}" in
+-l | --list)
+    current=$(cat "$out/current" 2>/dev/null || true)
+    for f in "$src"/*.sh; do
+        name=$(basename "$f" .sh)
+        if [ "$name" = "$current" ]; then echo "$name (current)"; else echo "$name"; fi
+    done
+    exit
+    ;;
+-h | --help)
+    sed -n '2,3p' "$0" | cut -c3-
+    exit
+    ;;
+esac
+
+name=${1:-$(cat "$out/current" 2>/dev/null || echo cga)}
+if [ ! -f "$src/$name.sh" ]; then
+    echo "theme: no theme '$name' in $src" >&2
+    exit 1
+fi
+
+FONT_MACOS=""
+ACCENT=""
+ACCENT_FG=""
+# shellcheck disable=SC1090
+. "$src/$name.sh"
+# A choice made with `font` beats the theme's own
+# shellcheck disable=SC1091
+if [ -f "$out/font.sh" ]; then . "$out/font.sh"; fi
+
+# Pale accents need dark text, so a theme can set ACCENT_FG for all text on
+# coloured backgrounds. Otherwise each gets its own bright colour.
+accent=${ACCENT:-$BLUE}
+accent_fg=${ACCENT_FG:-$BRIGHT_WHITE}
+prompt_fg=${ACCENT_FG:-$BRIGHT_CYAN}
+count_fg=${ACCENT_FG:-$FG}
+urgent_fg=${ACCENT_FG:-$BRIGHT_YELLOW}
+
+term_font=$FONT
+if [ "$(uname)" = Darwin ] && [ -n "$FONT_MACOS" ]; then term_font=$FONT_MACOS; fi
+
+# Build in a temp folder, so a theme missing a value changes nothing
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/theme.XXXXXX")
+trap 'rm -rf "$tmp"' EXIT
+
+cat >"$tmp/sway" <<EOF
+set \$font    pango:$FONT $FONT_SIZE
+set \$black   $BG
+set \$blue    $accent
+set \$accent_fg $accent_fg
+set \$urgent_fg $urgent_fg
+set \$green   $GREEN
+set \$cyan    $CYAN
+set \$red     $RED
+set \$magenta $MAGENTA
+set \$brown   $YELLOW
+set \$grey    $FG
+set \$dgrey   $BRIGHT_BLACK
+set \$lblue   $BRIGHT_BLUE
+set \$lcyan   $BRIGHT_CYAN
+set \$yellow  $BRIGHT_YELLOW
+set \$white   $BRIGHT_WHITE
+EOF
+
+cat >"$tmp/alacritty.toml" <<EOF
+[font]
+size = $FONT_SIZE_TERMINAL
+normal = { family = "$term_font" }
+
+[colors.primary]
+background = "$BG"
+foreground = "$FG"
+
+[colors.cursor]
+text = "$BG"
+cursor = "$FG"
+
+[colors.selection]
+text = "$BG"
+background = "$FG"
+
+[colors.normal]
+black = "$BLACK"
+red = "$RED"
+green = "$GREEN"
+yellow = "$YELLOW"
+blue = "$BLUE"
+magenta = "$MAGENTA"
+cyan = "$CYAN"
+white = "$WHITE"
+
+[colors.bright]
+black = "$BRIGHT_BLACK"
+red = "$BRIGHT_RED"
+green = "$BRIGHT_GREEN"
+yellow = "$BRIGHT_YELLOW"
+blue = "$BRIGHT_BLUE"
+magenta = "$BRIGHT_MAGENTA"
+cyan = "$BRIGHT_CYAN"
+white = "$BRIGHT_WHITE"
+EOF
+
+cat >"$tmp/rofi.rasi" <<EOF
+* {
+    black:  $BG;
+    blue:   $accent;
+    accent-fg: $accent_fg;
+    prompt-fg: $prompt_fg;
+    count-fg:  $count_fg;
+    urgent-fg: $urgent_fg;
+    cyan:   $CYAN;
+    red:    $RED;
+    grey:   $FG;
+    dgrey:  $BRIGHT_BLACK;
+    lblue:  $BRIGHT_BLUE;
+    lcyan:  $BRIGHT_CYAN;
+    yellow: $BRIGHT_YELLOW;
+    white:  $BRIGHT_WHITE;
+    font:   "$FONT $FONT_SIZE";
+}
+EOF
+
+cat >"$tmp/mako" <<EOF
+font=$FONT $FONT_SIZE
+background-color=$BG
+text-color=$FG
+border-color=$CYAN
+progress-color=over $accent
+
+[urgency=low]
+border-color=$BRIGHT_BLACK
+
+[urgency=critical]
+border-color=$BRIGHT_RED
+text-color=$BRIGHT_WHITE
+EOF
+
+cat >"$tmp/i3status.toml" <<EOF
+idle_bg = "$BG"
+idle_fg = "$FG"
+info_bg = "$BG"
+info_fg = "$BRIGHT_CYAN"
+good_bg = "$BG"
+good_fg = "$BRIGHT_GREEN"
+warning_bg = "$BG"
+warning_fg = "$BRIGHT_YELLOW"
+critical_bg = "$BRIGHT_RED"
+critical_fg = "$BG"
+separator = " | "
+separator_bg = "$BG"
+separator_fg = "$BRIGHT_BLACK"
+EOF
+
+cat >"$tmp/zathura" <<EOF
+set font "$FONT $FONT_SIZE"
+EOF
+
+cat >"$tmp/swayimg.lua" <<EOF
+return {
+  font = "$FONT",
+  bg = 0xff${BG#\#},
+  fg = 0xff${FG#\#},
+  text_bg = 0xcc${BG#\#},
+}
+EOF
+
+cat >"$tmp/lock.sh" <<EOF
+fg='$FG'
+bg='$BG'
+palette="$BLACK $RED $GREEN $YELLOW $BLUE $MAGENTA $CYAN $WHITE
+$BRIGHT_BLACK $BRIGHT_RED $BRIGHT_GREEN $BRIGHT_YELLOW $BRIGHT_BLUE $BRIGHT_MAGENTA $BRIGHT_CYAN $BRIGHT_WHITE"
+EOF
+
+echo "$name" >"$tmp/current"
+
+# rofi and i3status-rust only find included files in their own data folders
+rofi_dir="$HOME/.local/share/rofi/themes"
+i3status_dir="$HOME/.local/share/i3status-rust/themes"
+mkdir -p "$out" "$rofi_dir" "$i3status_dir"
+mv "$tmp/rofi.rasi" "$rofi_dir/theme-colors.rasi"
+mv "$tmp/i3status.toml" "$i3status_dir/theme.toml"
+cp "$tmp"/* "$out"/
+
+# Apply to what's running. Alacritty watches its config, and rofi, zathura,
+# swayimg and lock read theirs each time they start.
+if [ -n "${SWAYSOCK:-}" ]; then
+    swaymsg reload >/dev/null || echo "theme: sway reload failed" >&2
+fi
+if command -v makoctl >/dev/null && pgrep -x mako >/dev/null; then
+    makoctl reload || echo "theme: mako reload failed" >&2
+fi
+rm -f "${XDG_RUNTIME_DIR:-/tmp}"/lock-cal-*.png # cached with the old colours
+
+echo "theme: $name"

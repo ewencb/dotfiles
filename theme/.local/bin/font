@@ -1,0 +1,106 @@
+#!/bin/sh
+# font               pick a font with fzf
+# font NAME [SIZE]   use this font in every theme, e.g. font Departure Mono 12
+# font SIZE          keep the font, change the size
+# font -l            list monospace fonts
+# font -r            go back to each theme's own font and size
+#
+# The choice is saved in ~/.local/state/theme/font.sh, which `theme` reads
+# after the theme file. Theme files stay as they are.
+set -eu
+
+out="$HOME/.local/state/theme"
+file="$out/font.sh"
+
+die() {
+    echo "font: $1" >&2
+    exit 1
+}
+
+is_size() {
+    case "$1" in
+    '' | . | *[!0-9.]*) return 1 ;;
+    esac
+}
+
+# The current font and size, as `theme` last generated them
+current() {
+    sed -n 's/^set \$font *pango://p' "$out/sway" 2>/dev/null || true
+}
+
+# Mono fonts only, since alacritty uses the same one. Styles share a family
+# name, which fc-list prints first.
+list() {
+    { fc-list :spacing=mono family; fc-list :spacing=charcell family; } | cut -d, -f1 | sort -u
+}
+
+apply() {
+    theme >/dev/null
+    echo "font: $(current)"
+}
+
+case "${1:-}" in
+-l | --list)
+    list
+    exit
+    ;;
+-r | --reset)
+    rm -f "$file"
+    apply
+    exit
+    ;;
+-h | --help)
+    sed -n '2,6p' "$0" | cut -c3-
+    exit
+    ;;
+-*)
+    die "unknown option '$1' (try font -h)"
+    ;;
+esac
+
+if [ $# -eq 0 ]; then
+    if [ ! -t 0 ] || ! command -v fzf >/dev/null; then
+        current
+        exit
+    fi
+    args=$(list | fzf --prompt='font> ' --header="current: $(current)") || exit 0
+else
+    args=$*
+fi
+
+# Names can have spaces, so anything before a trailing number is the name
+name=$args
+size=""
+last=${args##* }
+if is_size "$last"; then
+    size=$last
+    name=${args%"$last"}
+    name=${name% }
+fi
+
+case "$name" in
+*[\"\'\\]*) die "quotes and backslashes in a font name would break the generated configs" ;;
+esac
+if [ -n "$name" ] && command -v fc-list >/dev/null && [ -z "$(fc-list "$name" family)" ]; then
+    die "no font '$name' installed (font -l lists them)"
+fi
+
+# Keep whichever half of an earlier choice this one doesn't replace
+FONT=""
+FONT_SIZE=""
+# shellcheck disable=SC1090
+if [ -f "$file" ]; then . "$file"; fi
+name=${name:-$FONT}
+size=${size:-$FONT_SIZE}
+
+mkdir -p "$out"
+{
+    if [ -n "$name" ]; then
+        printf "FONT='%s'\nFONT_MACOS=''\n" "$name"
+    fi
+    if [ -n "$size" ]; then
+        printf 'FONT_SIZE=%s\nFONT_SIZE_TERMINAL=%s\n' "$size" "$size"
+    fi
+} >"$file"
+
+apply

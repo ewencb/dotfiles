@@ -1,3 +1,0 @@
-# Imported by alacritty.toml; the macOS TTF build is named "Terminus (TTF)"
-[font]
-normal = { family = "Terminus (TTF)" }

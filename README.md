@@ -32,6 +32,7 @@ git clone git@github.com:ewencb/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 stow <package>...   # every shared package, see `ls`
 stow arch           # or macos
+theme               # generate the font and colour files the configs include
 ```
 
 Stow won't overwrite real files, so move old configs out first, or use
@@ -57,6 +58,28 @@ another package uses, or stow links file by file instead of the whole
 folder and new files won't end up in the repo.
 
 Secrets go in `~/.zprofile.local`, which isn't tracked.
+
+## Themes
+
+Fonts and colours live in one file per theme, `~/.config/theme/<name>.sh`
+(`theme/.config/theme/` here). Edit one, or copy it to add a theme, then:
+
+```sh
+theme           # reapply the current theme
+theme gruvbox   # switch theme
+theme -l        # list themes
+```
+
+The generated files are not tracked, so a new machine needs one `theme` run.
+
+`font` changes the font and size across every theme, without editing them:
+
+```sh
+font                    # pick with fzf
+font Departure Mono 12  # set font and size
+font 12                 # set size only
+font -r                 # back to each theme's own font
+```
 
 ## Hooks
 
